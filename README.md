@@ -5,10 +5,10 @@ extern crate regex;
 use regex::Regex;
 
 fn main() {
-    let date_time = "6/1/2025 0:00";
-    let re = Regex::new(r"^(0?[1-9]|1[0-2])/([1-9]|[12][0-9]|3[01])/(\d{4}) ([01]?\d|2[0-3]):([0-5]?\d)$").unwrap();
+    let date = "6/1/2025";
+    let re = Regex::new(r"^(0?[1-9]|1[0-2])/([1-9]|[12][0-9]|3[01])/(\d{4})$").unwrap();
 
-    if re.is_match(date_time) {
+    if re.is_match(date) {
         println!("The string is in the correct format.");
     } else {
         println!("The string is not in the correct format.");
