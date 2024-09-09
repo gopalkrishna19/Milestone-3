@@ -1,54 +1,39 @@
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer, PorterStemmer
+fn is_valid_number(s: String) -> bool {
+    // First check if it can be parsed as a float and is positive
+    if let Ok(n) = s.trim().parse::<f64>() {
+        if n > 0.0 {
+            // Split into the part before and after the decimal
+            let parts: Vec<&str> = s.split('.').collect();
+            
+            // Check the number of digits before the decimal
+            if parts[0].len() > 9 {
+                return false;
+            }
+            
+            // Check the number of digits after the decimal (if any)
+            if parts.len() == 2 && parts[1].len() > 3 {
+                return false;
+            }
+            
+            return true;
+        }
+    }
+    
+    false
+}
 
-# Load the data from the Excel file
-file_path = 'path_to_your_file.xlsx'
-data = pd.read_excel(file_path, sheet_name='simsTrain')
-
-# Define preprocessing functions
-stop_words = set(stopwords.words('english'))
-lemmatizer = WordNetLemmatizer()
-stemmer = PorterStemmer()
-
-def preprocess_text(text):
-    # Tokenize text
-    words = word_tokenize(text.lower())
-    # Remove stopwords
-    words = [word for word in words if word.isalnum() and word not in stop_words]
-    # Lemmatize and stem
-    words = [lemmatizer.lemmatize(word) for word in words]
-    words = [stemmer.stem(word) for word in words]
-    return ' '.join(words)
-
-# Preprocess the text data
-data['Processed_Input'] = data['Input'].apply(preprocess_text)
-
-# Convert text data to numerical vectors using TF-IDF
-tfidf_vectorizer = TfidfVectorizer()
-X = tfidf_vectorizer.fit_transform(data['Processed_Input'])
-
-# Get the categorical data
-y = data['Defect']
-
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Initialize and train the Random Forest classifier
-rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
-rf_classifier.fit(X_train, y_train)
-
-# Make predictions
-y_pred = rf_classifier.predict(X_test)
-
-# Evaluate the model
-accuracy = accuracy_score(y_test, y_pred)
-classification_rep = classification_report(y_test, y_pred)
-
-print(f'Accuracy: {accuracy}')
-print(f'Classification Report:\n{classification_rep}')
+fn main() {
+    let test_cases = vec![
+        String::from("123456789"),      // valid
+        String::from("1234567890"),     // invalid: more than 9 digits before decimal
+        String::from("123456.789"),     // valid
+        String::from("123456789.123"),  // valid
+        String::from("123456789.1234"), // invalid: more than 3 digits after decimal
+        String::from("-123456789"),     // invalid: negative number
+        String::from("hello"),          // invalid: not a number
+    ];
+    
+    for test in test_cases {
+        println!("{}: {}", test, is_valid_number(test.clone()));
+    }
+}
