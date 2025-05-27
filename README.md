@@ -1,7 +1,6 @@
-tasks.named<io.quarkus.gradle.tasks.QuarkusBuild>("quarkusBuild") {
-    nativeArgs {
-        "enabled" to true
-        "container-build" to true
-        "builder-image" to "quay.io/quarkus/ubi-quarkus-native-image:21.0.0-java11"
-    }
-}
+* def a = cellValue1
+* def b = cellValue2
+
+# Check if both are numbers
+* def isNumeric = function(x) { return !isNaN(x) && x !== null && x !== true && x !== false }
+* def result = isNumeric(a) && isNumeric(b) ? karate.match(karate.toNumber(a), karate.toNumber(b)) : karate.match(a, b)
