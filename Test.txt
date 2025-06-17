@@ -1,39 +1,67 @@
-fn is_valid_number(s: String) -> bool {
-    // First check if it can be parsed as a float and is positive
-    if let Ok(n) = s.trim().parse::<f64>() {
-        if n > 0.0 {
-            // Split into the part before and after the decimal
-            let parts: Vec<&str> = s.split('.').collect();
-            
-            // Check the number of digits before the decimal
-            if parts[0].len() > 9 {
-                return false;
-            }
-            
-            // Check the number of digits after the decimal (if any)
-            if parts.len() == 2 && parts[1].len() > 3 {
-                return false;
-            }
-            
-            return true;
-        }
-    }
-    
-    false
-}
+import random
+import uuid
+from datetime import datetime, timedelta
+import json
 
-fn main() {
-    let test_cases = vec![
-        String::from("123456789"),      // valid
-        String::from("1234567890"),     // invalid: more than 9 digits before decimal
-        String::from("123456.789"),     // valid
-        String::from("123456789.123"),  // valid
-        String::from("123456789.1234"), // invalid: more than 3 digits after decimal
-        String::from("-123456789"),     // invalid: negative number
-        String::from("hello"),          // invalid: not a number
-    ];
-    
-    for test in test_cases {
-        println!("{}: {}", test, is_valid_number(test.clone()));
-    }
-}
+# Constants
+NUM_USERS = 50
+NUM_LOGINS = 500
+
+device_types = ["mobile", "desktop", "tablet"]
+os_browsers = ["Windows/Chrome", "Windows/Edge", "Mac/Safari", "Android/Chrome", "iOS/Safari", "Linux/Firefox"]
+resolutions = ["1920x1080", "1366x768", "1440x900", "1080x2340", "750x1334"]
+login_methods = ["password", "biometric", "OTP"]
+channels = ["web", "app", "USSD", "API"]
+locations = [
+    {"city": "New York", "lat": 40.7128, "lon": -74.0060},
+    {"city": "Los Angeles", "lat": 34.0522, "lon": -118.2437},
+    {"city": "Chicago", "lat": 41.8781, "lon": -87.6298},
+    {"city": "Houston", "lat": 29.7604, "lon": -95.3698},
+    {"city": "Miami", "lat": 25.7617, "lon": -80.1918},
+]
+
+def random_ip():
+    return ".".join(str(random.randint(0, 255)) for _ in range(4))
+
+def generate_logins():
+    users = [f"U{str(i).zfill(4)}" for i in range(1, NUM_USERS + 1)]
+    base_time = datetime.utcnow()
+    login_data = []
+
+    for _ in range(NUM_LOGINS):
+        user = random.choice(users)
+        timestamp = base_time - timedelta(minutes=random.randint(0, 100000))
+        device = random.choice(device_types)
+        os_browser = random.choice(os_browsers)
+        resolution = random.choice(resolutions)
+        ip = random_ip()
+        location = random.choice(locations)
+        method = random.choice(login_methods)
+        channel = random.choice(channels)
+
+        login_entry = {
+            "user_id": user,
+            "timestamp": timestamp.isoformat() + "Z",
+            "device_type": device,
+            "os_browser": os_browser,
+            "screen_resolution": resolution,
+            "ip": ip,
+            "geolocation": {
+                "lat": location["lat"],
+                "lon": location["lon"],
+                "city": location["city"]
+            },
+            "login_method": method,
+            "channel": channel
+        }
+        login_data.append(login_entry)
+
+    return login_data
+
+# Generate and dump to JSON
+logins = generate_logins()
+
+with open("synthetic_login_metadata.json", "w") as f:
+    json.dump(logins, f, indent=2)
+
+print(f"Generated {len(logins)} login events.")
